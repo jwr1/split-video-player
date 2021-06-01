@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Grid, IconButton, Slider } from '@material-ui/core';
+import { IconButton, Slider } from '@material-ui/core';
 import { PlayArrow, Pause } from '@material-ui/icons';
 
 const { ipcRenderer } = window.require('electron');
@@ -25,41 +25,43 @@ const App = () => {
 
   return (
     <>
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        justify="center"
-        style={{ padding: '10px 0px 0px 20px', position: 'fixed', width: '100%', height: '100%' }}
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+        }}
       >
-        <Grid item>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={() => setPlaying(!playing)}
-            disabled={duration === 0}
-          >
-            {playing ? <Pause /> : <PlayArrow />}
-          </IconButton>
-        </Grid>
-        <Grid item xs>
-          <Slider
-            value={time}
-            max={duration}
-            onChange={(e, newValue) => {
-              setTime(newValue);
-              ipcRenderer.send('control:time', newValue);
-            }}
-            disabled={duration === 0}
-          />
-        </Grid>
-        <Grid item>
-          <span>
-            {zero(Math.floor(time / 60))}:{zero(Math.round(time % 60))} /{' '}
-            {zero(Math.floor(duration / 60))}:{zero(Math.round(duration % 60))}
-          </span>
-        </Grid>
-      </Grid>
+        <IconButton
+          edge="start"
+          color="inherit"
+          onClick={() => setPlaying(!playing)}
+          disabled={duration === 0}
+          style={{ margin: 8 }}
+        >
+          {playing ? <Pause /> : <PlayArrow />}
+        </IconButton>
+        <Slider
+          style={{
+            flexGrow: 1,
+            maxWidth: '100%',
+            flexBasis: 0,
+            margin: 8,
+          }}
+          value={time}
+          max={duration}
+          onChange={(e, newValue) => {
+            setTime(newValue);
+            ipcRenderer.send('control:time', newValue);
+          }}
+          disabled={duration === 0}
+        />
+        <span style={{ margin: 8 }}>
+          {zero(Math.floor(time / 60))}:{zero(Math.round(time % 60))} /{' '}
+          {zero(Math.floor(duration / 60))}:{zero(Math.round(duration % 60))}
+        </span>
+      </div>
     </>
   );
 };

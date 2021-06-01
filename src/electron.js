@@ -22,7 +22,7 @@ if (app.requestSingleInstanceLock()) {
   });
 
   ipcMain.on('video:size', (e, width, height) => {
-    videoWindow.setBounds({ width, height });
+    videoWindow.setContentSize(width, height);
   });
 
   ipcMain.on('video:duration', (e, duration) => {
@@ -104,10 +104,11 @@ if (app.requestSingleInstanceLock()) {
     );
 
     controlWindow = new BrowserWindow({
+      useContentSize: true,
       width: 500,
-      height: 90,
+      height: 64,
       minWidth: 250,
-      minHeight: 90,
+      minHeight: 64,
       webPreferences: {
         contextIsolation: false,
         nodeIntegration: true,
