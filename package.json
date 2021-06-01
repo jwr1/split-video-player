@@ -1,0 +1,110 @@
+{
+  "name": "split-video-player",
+  "version": "1.0.0",
+  "description": "Split video player and controls",
+  "main": "dist/wp/index.js",
+  "scripts": {
+    "dev:server": "webpack serve --mode development",
+    "dev:electron": "electron ./src/electron.js",
+    "build": "npm run build:wp && npm run build:eb",
+    "build:wp": "webpack build --mode production",
+    "build:eb": "electron-builder -mlw"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwr12135/split-video-player.git"
+  },
+  "author": {
+    "name": "Johnwesley R.",
+    "email": "jwr12135@gmail.com",
+    "url": "https://github.com/jwr12135"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jwr12135/split-video-player/issues"
+  },
+  "homepage": "https://github.com/jwr12135/split-video-player#readme",
+  "devDependencies": {
+    "@airbnb-config/eslint-react": "^1.0.0",
+    "@airbnb-config/prettier": "^1.0.2",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/preset-react": "^7.13.13",
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "copy-webpack-plugin": "^9.0.0",
+    "electron": "^13.0.1",
+    "electron-builder": "^22.10.5",
+    "html-webpack-plugin": "^5.3.1",
+    "prettier": "^2.3.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": "./node_modules/@airbnb-config/eslint-react",
+    "rules": {
+      "jsx-a11y/media-has-caption": "off",
+      "react/jsx-filename-extension": "off",
+      "react/prop-types": "off",
+      "react/react-in-jsx-scope": "off",
+      "import/no-extraneous-dependencies": "off"
+    }
+  },
+  "prettier": "@airbnb-config/prettier",
+  "build": {
+    "productName": "Split Video Player",
+    "files": [
+      "dist/wp/*",
+      "!dist/wp/*.LICENSE.txt"
+    ],
+    "directories": {
+      "buildResources": "assets/build",
+      "output": "dist/eb"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage"
+        },
+        {
+          "target": "deb"
+        },
+        {
+          "target": "rpm"
+        }
+      ],
+      "category": "Video",
+      "mimeTypes": [
+        "video/mp4",
+        "video/ogg",
+        "video/webm"
+      ]
+    },
+    "deb": {
+      "packageCategory": "video",
+      "priority": "optional"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis"
+        },
+        {
+          "target": "portable"
+        }
+      ]
+    }
+  }
+}
