@@ -8,7 +8,7 @@
     "dev:electron": "electron ./src/electron.js",
     "build": "npm run build:wp && npm run build:eb",
     "build:wp": "webpack build --mode production",
-    "build:eb": "electron-builder -mlw"
+    "build:eb": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@airbnb-config/eslint-react": "^1.0.0",
     "@airbnb-config/prettier": "^1.0.2",
+    "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.13.13",
     "@material-ui/core": "^4.11.4",
