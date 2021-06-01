@@ -10,6 +10,9 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
+    env:
+      GH_TOKEN: ${{ secrets.EB_GH_TOKEN }}
+
     steps:
       - uses: actions/checkout@v2
 
