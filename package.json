@@ -33,14 +33,19 @@
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "babel-loader": "^8.2.2",
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^9.0.0",
-    "electron": "^13.0.1",
+    "css-loader": "^5.2.6",
+    "css-minimizer-webpack-plugin": "^3.0.1",
+    "electron": "^13.1.1",
     "electron-builder": "^22.10.5",
+    "electron-updater": "^4.3.9",
+    "eslint": "^7.28.0",
     "html-webpack-plugin": "^5.3.1",
-    "prettier": "^2.3.0",
+    "mini-css-extract-plugin": "^1.6.0",
+    "prettier": "^2.3.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "terser-webpack-plugin": "^5.1.3",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
@@ -70,6 +75,23 @@
       "buildResources": "assets/build",
       "output": "dist/eb"
     },
+    "fileAssociations": [
+      {
+        "ext": "mp4",
+        "mimeType": "video/mp4",
+        "role": "Viewer"
+      },
+      {
+        "ext": "ogg",
+        "mimeType": "video/ogg",
+        "role": "Viewer"
+      },
+      {
+        "ext": "webm",
+        "mimeType": "video/webm",
+        "role": "Viewer"
+      }
+    ],
     "linux": {
       "target": [
         {
@@ -82,12 +104,7 @@
           "target": "rpm"
         }
       ],
-      "category": "Video",
-      "mimeTypes": [
-        "video/mp4",
-        "video/ogg",
-        "video/webm"
-      ]
+      "category": "Video"
     },
     "deb": {
       "packageCategory": "video",
@@ -95,7 +112,7 @@
     },
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.video"
     },
     "win": {
       "target": [
@@ -106,6 +123,9 @@
           "target": "portable"
         }
       ]
+    },
+    "nsis": {
+      "perMachine": true
     }
   }
 }

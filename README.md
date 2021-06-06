@@ -1,1 +1,1 @@
-# split-video-player
+# Split Video Player

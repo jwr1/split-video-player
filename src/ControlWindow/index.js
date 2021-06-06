@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import './style.css';
+
+import { useState, useEffect } from 'react';
+import { render } from 'react-dom';
 import { IconButton, Slider } from '@material-ui/core';
 import { PlayArrow, Pause } from '@material-ui/icons';
 
@@ -15,13 +17,8 @@ const App = () => {
   useEffect(() => {
     ipcRenderer.on('video:time', (e, newTime) => setTime(newTime));
     ipcRenderer.on('video:duration', (e, newDuration) => setDuration(newDuration));
-    ipcRenderer.on('video:play', () => setPlaying(true));
-    ipcRenderer.on('video:pause', () => setPlaying(false));
+    ipcRenderer.on('video:playing', (e, isPlaying) => setPlaying(isPlaying));
   }, []);
-
-  useEffect(() => {
-    ipcRenderer.send(`control:${playing ? 'play' : 'pause'}`);
-  }, [playing]);
 
   return (
     <>
@@ -36,7 +33,10 @@ const App = () => {
         <IconButton
           edge="start"
           color="inherit"
-          onClick={() => setPlaying(!playing)}
+          onClick={() => {
+            ipcRenderer.send('control:playing', !playing);
+            setPlaying(!playing);
+          }}
           disabled={duration === 0}
           style={{ margin: 8 }}
         >
@@ -66,4 +66,4 @@ const App = () => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));

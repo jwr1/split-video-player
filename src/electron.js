@@ -1,4 +1,5 @@
 const { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, shell } = require('electron');
+const { autoUpdater } = require('electron-updater');
 
 /**
  * @type {BrowserWindow}
@@ -10,6 +11,19 @@ let controlWindow;
 let videoWindow;
 
 if (app.requestSingleInstanceLock()) {
+  autoUpdater.checkForUpdatesAndNotify();
+
+  const videoHeights = {
+    s: 480,
+    sh: 720,
+    fh: 1080,
+    uh: 2160,
+  };
+  const videoHeightsKeys = Object.keys(videoHeights);
+  const videoHeightsKeysLength = videoHeightsKeys.length;
+
+  let currentVideoSize = [720, videoHeights.s];
+
   /**
    * @param {string} file
    */
@@ -23,24 +37,24 @@ if (app.requestSingleInstanceLock()) {
 
   ipcMain.on('video:size', (e, width, height) => {
     videoWindow.setContentSize(width, height);
+    currentVideoSize = [width, height];
+
+    for (let i = 0; i < videoHeightsKeysLength; i += 1) {
+      Menu.getApplicationMenu().getMenuItemById(videoHeightsKeys[i]).enabled =
+        currentVideoSize[1] >= videoHeights[videoHeightsKeys[i]];
+    }
   });
 
   ipcMain.on('video:duration', (e, duration) => {
     controlWindow.webContents.send('video:duration', duration);
   });
 
-  ipcMain.on('control:play', () => {
-    videoWindow.webContents.send('control:play');
-  });
-  ipcMain.on('control:pause', () => {
-    videoWindow.webContents.send('control:pause');
+  ipcMain.on('control:playing', (e, isPlaying) => {
+    videoWindow.webContents.send('control:playing', isPlaying);
   });
 
-  ipcMain.on('video:play', () => {
-    controlWindow.webContents.send('video:play');
-  });
-  ipcMain.on('video:pause', () => {
-    controlWindow.webContents.send('video:pause');
+  ipcMain.on('video:playing', (e, isPlaying) => {
+    controlWindow.webContents.send('video:playing', isPlaying);
   });
 
   ipcMain.on('video:time', (e, time) => {
@@ -56,6 +70,19 @@ if (app.requestSingleInstanceLock()) {
   );
 
   app.whenReady().then(() => {
+    /**
+     * @param {Electron.MenuItem} menuItem
+     */
+    const setResolutionFunc = (menuItem) => {
+      if (menuItem.id === 'o') {
+        videoWindow.setContentSize(currentVideoSize[0], currentVideoSize[1]);
+      } else {
+        videoWindow.setContentSize(
+          Math.round((videoHeights[menuItem.id] / currentVideoSize[1]) * currentVideoSize[0]),
+          videoHeights[menuItem.id],
+        );
+      }
+    };
     Menu.setApplicationMenu(
       Menu.buildFromTemplate([
         {
@@ -79,7 +106,26 @@ if (app.requestSingleInstanceLock()) {
             { role: 'quit' },
           ],
         },
-        { role: 'windowMenu' },
+        {
+          label: 'View',
+          submenu: [
+            {
+              label: 'Toggle Fullscreen',
+              accelerator: process.platform === 'darwin' ? 'Ctrl+Cmd+F' : 'F11',
+              click: () => videoWindow.setFullScreen(!videoWindow.fullScreen),
+            },
+            {
+              label: 'Set Resolution',
+              submenu: [
+                { label: 'Original', id: 'o', click: setResolutionFunc },
+                { label: 'SD', id: 's', click: setResolutionFunc, enabled: false },
+                { label: 'Standard HD', id: 'sh', click: setResolutionFunc, enabled: false },
+                { label: 'Full HD', id: 'fh', click: setResolutionFunc, enabled: false },
+                { label: 'UHD', id: 'uh', click: setResolutionFunc, enabled: false },
+              ],
+            },
+          ],
+        },
         {
           role: 'help',
           submenu: [
@@ -119,6 +165,9 @@ if (app.requestSingleInstanceLock()) {
       show: false,
     });
     videoWindow = new BrowserWindow({
+      useContentSize: true,
+      width: currentVideoSize[0],
+      height: currentVideoSize[1],
       webPreferences: {
         contextIsolation: false,
         nodeIntegration: true,
@@ -131,7 +180,7 @@ if (app.requestSingleInstanceLock()) {
       show: false,
     });
 
-    videoWindow.removeMenu();
+    if (typeof PRODUCTION !== 'undefined') videoWindow.removeMenu();
 
     if (typeof PRODUCTION === 'undefined') {
       controlWindow.loadURL('http://localhost:8080/control.html');
